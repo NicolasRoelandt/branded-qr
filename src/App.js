@@ -9,7 +9,7 @@ const WIDTH = 10;
 const HEIGHT = 10;
 function App() {
   const qrData = QRProcessor("https://example.com/", {
-    errorCorrectLevel: QRProcessor.ErrorCorrectLevel.H,
+    typeNumber: 4,
   });
 
   const [cells, setCells] = React.useState(qrData.modules);
@@ -19,7 +19,7 @@ function App() {
   const onChangeUrl = (value) => {
     setUrl(value);
     const qrData = QRProcessor(value, {
-      errorCorrectLevel: QRProcessor.ErrorCorrectLevel.H,
+      typeNumber: 4,
     });
     const cells = qrData.modules;
     setCells(cells);
@@ -97,7 +97,7 @@ function Cell({ value, i, j, rowCount, colCount, imageUrl }) {
           width: WIDTH * colCount,
           height: HEIGHT * rowCount,
           clipPath: `xywh(${y}px ${x}px ${WIDTH}px ${HEIGHT}px)`,
-          opacity: value ? 0.75 : 0.25,
+          opacity: value ? 0.7 : 0.3,
         }}
         src={imageUrl}
       />
