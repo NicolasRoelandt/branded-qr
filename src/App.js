@@ -97,7 +97,7 @@ function Cell({ value, i, j, rowCount, colCount, imageUrl }) {
           width: WIDTH * colCount,
           height: HEIGHT * rowCount,
           clipPath: `xywh(${y}px ${x}px ${WIDTH}px ${HEIGHT}px)`,
-          opacity: value ? 0.75 : 0.25,
+          opacity: value ? 0.7 : 0.3,
         }}
         src={imageUrl}
       />
