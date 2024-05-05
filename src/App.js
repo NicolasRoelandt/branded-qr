@@ -1,7 +1,6 @@
-// import logo from "./meta-logo-facebook-2.svg";
-// import logo from "./logo.svg";
-import logo from "./reddit-logo.jpg";
-// import logo from "./logo.svg";
+import reactLogo from "./logo.svg";
+import metaLogo from "./meta.png";
+import waLogo from "./whatsapp.png";
 import "./App.css";
 import QRProcessor from "qr.js";
 import React from "react";
@@ -9,44 +8,75 @@ import React from "react";
 const WIDTH = 10;
 const HEIGHT = 10;
 function App() {
-  const qrData = QRProcessor(
-    "https://stackoverflow.com/questions/12991351/how-to-force-image-resize-and-keep-aspect-ratio",
-    {
-      errorCorrectLevel: QRProcessor.ErrorCorrectLevel.H,
-    }
-  );
-  const cells = qrData.modules;
-  const cellsPerSide = cells.length;
+  const qrData = QRProcessor("https://example.com/", {
+    errorCorrectLevel: QRProcessor.ErrorCorrectLevel.H,
+  });
 
-  return (
-    <div>
-      <header>
-        <div style={{ position: "relative" }}>
-          <div style={{ position: "relative" }}>
-            {cells.map((row, j) => (
-              <Row row={row} j={j} key={j} rowCount={cells.length} />
-            ))}
-          </div>
-        </div>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+  const [cells, setCells] = React.useState(qrData.modules);
+  const [imageUrl, setImageUrl] = React.useState(null);
+  const [url, setUrl] = React.useState("https://example.com/");
+
+  const onChangeUrl = (value) => {
+    setUrl(value);
+    const qrData = QRProcessor(value, {
+      errorCorrectLevel: QRProcessor.ErrorCorrectLevel.H,
+    });
+    const cells = qrData.modules;
+    setCells(cells);
+  };
+  const uploadImage = (e) => {
+    setImageUrl(URL.createObjectURL(e.target.files[0]));
+  };
+
+  return cells && imageUrl ? (
+    <div style={{ position: "relative" }}>
+      {cells.map((row, j) => (
+        <Row
+          row={row}
+          j={j}
+          key={j}
+          rowCount={cells.length}
+          imageUrl={imageUrl}
+        />
+      ))}
     </div>
+  ) : (
+    <>
+      <div>
+        <header> Hello! </header>
+        <header>
+          Url for the QRCode:{" "}
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => onChangeUrl(e.target.value)}
+          />
+        </header>
+        <header>
+          Upload an image to QRify:{" "}
+          <input
+            style={{ display: "inline" }}
+            type="file"
+            id="files"
+            label="upload image "
+            accept="image/*"
+            onChange={uploadImage}
+          />
+        </header>
+      </div>
+      <header>
+        Or chose one of these logos:
+        <Button onClick={() => setImageUrl(reactLogo)} label="React" />
+        <Button onClick={() => setImageUrl(metaLogo)} label="Meta" />
+        <Button onClick={() => setImageUrl(waLogo)} label="Whatsapp" />
+      </header>
+    </>
   );
 }
 
-function Cell({ value, i, j, rowCount, colCount }) {
-  const x = i * WIDTH + 50;
-  const y = j * HEIGHT + 50;
+function Cell({ value, i, j, rowCount, colCount, imageUrl }) {
+  const x = i * WIDTH;
+  const y = j * HEIGHT;
   return (
     <>
       <div
@@ -59,24 +89,23 @@ function Cell({ value, i, j, rowCount, colCount }) {
           backgroundColor: value ? "black" : "#fff",
         }}
       />
-
       <img
         style={{
           position: "absolute",
           top: 0,
           left: 0,
-          width: WIDTH * colCount + 100,
-          height: HEIGHT * rowCount + 100,
+          width: WIDTH * colCount,
+          height: HEIGHT * rowCount,
           clipPath: `xywh(${y}px ${x}px ${WIDTH}px ${HEIGHT}px)`,
-          opacity: value ? 0.7 : 0.3,
+          opacity: value ? 0.75 : 0.25,
         }}
-        src={logo}
+        src={imageUrl}
       />
     </>
   );
 }
 
-function Row({ row, j, rowCount }) {
+function Row({ row, j, rowCount, imageUrl }) {
   return row.map((cell, i) => (
     <Cell
       value={cell}
@@ -85,8 +114,17 @@ function Row({ row, j, rowCount }) {
       rowCount={rowCount}
       colCount={row.length}
       key={i}
+      imageUrl={imageUrl}
     />
   ));
+}
+
+function Button({ label, onClick }) {
+  return (
+    <button onClick={onClick} style={{ display: "inline", margin: 4 }}>
+      {label}
+    </button>
+  );
 }
 
 export default App;
